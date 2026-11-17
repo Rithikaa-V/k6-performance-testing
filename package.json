@@ -1,0 +1,28 @@
+{
+  "name": "k6-quickpizza-perf",
+  "version": "1.0.0",
+  "description": "k6 performance test suite (TypeScript) for the QuickPizza demo API",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "validate": "for f in tests/*.test.ts; do k6 inspect \"$f\" > /dev/null && echo \"ok  $f\" || exit 1; done",
+    "smoke": "k6 run tests/smoke.test.ts",
+    "load": "k6 run tests/load.test.ts",
+    "stress": "k6 run tests/stress.test.ts",
+    "spike": "k6 run tests/spike.test.ts",
+    "soak": "k6 run tests/soak.test.ts",
+    "mixed": "k6 run tests/mixed-workload.test.ts",
+    "report:smoke": "cross-env K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=results/smoke-report.html k6 run tests/smoke.test.ts",
+    "report:load": "cross-env K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=results/load-report.html k6 run tests/load.test.ts",
+    "report:mixed": "cross-env K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=results/mixed-report.html k6 run tests/mixed-workload.test.ts",
+    "app:up": "docker compose up -d",
+    "app:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/k6": "latest",
+    "cross-env": "^10.1.0",
+    "typescript": "^5.6.0"
+  }
+}

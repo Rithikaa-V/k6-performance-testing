@@ -1,0 +1,42 @@
+[
+  {
+    "maxCaloriesPerSlice": 1000,
+    "mustBeVegetarian": false,
+    "excludedIngredients": [],
+    "excludedTools": [],
+    "maxNumberOfToppings": 5,
+    "minNumberOfToppings": 2
+  },
+  {
+    "maxCaloriesPerSlice": 800,
+    "mustBeVegetarian": true,
+    "excludedIngredients": ["anchovies", "bacon"],
+    "excludedTools": [],
+    "maxNumberOfToppings": 4,
+    "minNumberOfToppings": 2
+  },
+  {
+    "maxCaloriesPerSlice": 700,
+    "mustBeVegetarian": false,
+    "excludedIngredients": ["anchovies"],
+    "excludedTools": [],
+    "maxNumberOfToppings": 3,
+    "minNumberOfToppings": 1
+  },
+  {
+    "maxCaloriesPerSlice": 1200,
+    "mustBeVegetarian": false,
+    "excludedIngredients": ["bacon"],
+    "excludedTools": [],
+    "maxNumberOfToppings": 6,
+    "minNumberOfToppings": 3
+  },
+  {
+    "maxCaloriesPerSlice": 900,
+    "mustBeVegetarian": true,
+    "excludedIngredients": [],
+    "excludedTools": [],
+    "maxNumberOfToppings": 5,
+    "minNumberOfToppings": 2
+  }
+]

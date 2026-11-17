@@ -1,0 +1,55 @@
+name: k6
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      test:
+        description: Test to run (file name in tests/ without .test.ts)
+        default: smoke
+      base_url:
+        description: Target base URL
+        default: https://quickpizza.grafana.com
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    env:
+      TEST_NAME: ${{ inputs.test || 'smoke' }}
+      BASE_URL: ${{ inputs.base_url || 'https://quickpizza.grafana.com' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: grafana/setup-k6-action@v1
+
+      # k6 skips type checks, so TypeScript is the safety net.
+      - name: Type check
+        run: |
+          npm install
+          npm run typecheck
+
+      # This validates every script and its options without sending traffic.
+      - name: Validate scripts
+        run: |
+          for f in tests/*.test.ts; do
+            k6 inspect "$f" > /dev/null
+          done
+
+      # Any breached threshold makes k6 exit non-zero and fail the job.
+      - name: Run ${{ env.TEST_NAME }}
+        run: k6 run -e BASE_URL="$BASE_URL" "tests/${TEST_NAME}.test.ts"
+        env:
+          K6_WEB_DASHBOARD: "true"
+          K6_WEB_DASHBOARD_EXPORT: results/report.html
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-results-${{ env.TEST_NAME }}
+          path: results/

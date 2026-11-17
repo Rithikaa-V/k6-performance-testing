@@ -1,0 +1,11 @@
+node_modules/
+.env
+.DS_Store
+*.log
+
+# Run output is kept in results/ so handleSummary can write to it.
+results/*
+!results/.gitkeep
+
+docs/
+README.local.md

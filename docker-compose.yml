@@ -1,0 +1,8 @@
+# Local app copy for stress and spike runs without hitting the shared demo.
+# Example: docker compose up -d; k6 run -e BASE_URL=http://localhost:3333 tests/stress.test.js
+
+services:
+  quickpizza:
+    image: ghcr.io/grafana/quickpizza-local:latest
+    ports:
+      - "3333:3333"
