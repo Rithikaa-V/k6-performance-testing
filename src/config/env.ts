@@ -7,7 +7,12 @@ function num(name: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export const BASE_URL: string = (__ENV.BASE_URL || 'https://quickpizza.grafana.com').replace(/\/+$/, '');
+export const BASE_URL: string = (__ENV.BASE_URL || 'http://localhost:3333').replace(/\/+$/, '');
+
+// print one warning line for every unexpected 4xx/5xx/network error
+// (method, path, status, start of the body). Handy when a threshold fails and
+// you need to know which request caused it: -e LOG_FAILURES=1
+export const LOG_FAILURES: boolean = __ENV.LOG_FAILURES === '1';
 
 // Load shape.
 export const PEAK_VUS = num('PEAK_VUS', 10);

@@ -624,7 +624,7 @@ The same commands are available as npm scripts (`npm run smoke`, `npm run report
 
 ## 14.3 Where to run what
 
-The public QuickPizza instance is shared by many people. Smoke, load and mixed tests at small scale are reasonable there. Stress and spike tests should go to a local container or your own deployment. In real work the same rule applies: never run a heavy test against a system you do not own or do not have permission to test.
+The project runs against a local QuickPizza container (`docker compose up -d`, then `BASE_URL=http://localhost:3333`). The public instance is shared, and during development it rejected rating updates and deletes with a 403, so it is not a dependable target for tests that write per-user data. The CI workflow starts the same image as a service container. In real work the same rule applies: test an environment you control, and never run a heavy test against a system you do not own or have permission to test.
 
 ## 14.4 If the first run fails
 
@@ -638,6 +638,8 @@ The public QuickPizza instance is shared by many people. Smoke, load and mixed t
 | `open()` file not found | `open` paths are relative to the file that calls it (`src/lib/data.ts`). Run `k6` from the repo root as in the examples. |
 
 Useful debugging flags: `--http-debug` prints requests and responses, `--iterations 1 --vus 1` runs a single pass, and `console.log()` writes to the terminal (use sparingly in real runs).
+
+| 403 `operation not permitted for default user` on rating PUT/DELETE | You are on the public demo. Use the local container. |
 
 # 15. Reading the results
 

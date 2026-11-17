@@ -43,7 +43,7 @@ jobs:
 
       # Any breached threshold makes k6 exit non-zero and fail the job.
       - name: Run ${{ env.TEST_NAME }}
-        run: k6 run -e BASE_URL="$BASE_URL" "tests/${TEST_NAME}.test.ts"
+        run: k6 run -e BASE_URL="$BASE_URL" -e LOG_FAILURES=1 "tests/${TEST_NAME}.test.ts"
         env:
           K6_WEB_DASHBOARD: "true"
           K6_WEB_DASHBOARD_EXPORT: results/report.html

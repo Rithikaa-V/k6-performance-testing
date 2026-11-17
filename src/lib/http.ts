@@ -1,17 +1,20 @@
 import http from 'k6/http';
 import type { Params, RefinedResponse, ResponseType } from 'k6/http';
-import { BASE_URL } from '../config/env.ts';
+import { BASE_URL, LOG_FAILURES } from '../config/env.ts';
 
-// Thin wrapper around k6/http so every request gets the same headers, auth format, and tags.
+// Thin wrapper over k6/http so every request in the project gets the same
+// headers, auth format and tagging.
 
 export interface RequestOptions {
-  // Adds the Authorization header with the token.
+  // adds "Authorization: Token <token>"
   token?: string;
-  // The value for the name tag; always set this for URLs with ids so they stay grouped.
+  // value for the "name" tag. Always set this for URLs that contain ids,
+  // otherwise every id becomes its own time series.
   name?: string;
-  // Status codes that are expected for this request and should not count as failures.
+  // status codes that are *not* failures for this request (used by the
+  // negative tests so a deliberate 401 or 404 does not inflate http_req_failed)
   expected?: number[];
-  // JSON body to send.
+  // object, sent as JSON
   body?: unknown;
 }
 
@@ -34,10 +37,18 @@ export function buildParams(opts: RequestOptions = {}): Params {
 
 export function api(method: string, path: string, opts: RequestOptions = {}): ApiResponse {
   const payload = opts.body === undefined ? null : JSON.stringify(opts.body);
-  return http.request(method, `${BASE_URL}${path}`, payload, buildParams(opts));
+  const res = http.request(method, `${BASE_URL}${path}`, payload, buildParams(opts));
+
+  if (LOG_FAILURES && (res.status === 0 || res.status >= 400)) {
+    const wanted = opts.expected || [];
+    if (wanted.indexOf(res.status) === -1) {
+      console.warn(`unexpected ${res.status} on ${method} ${path}: ${String(res.body).slice(0, 150)}`);
+    }
+  }
+  return res;
 }
 
-// Same params for http.batch(), but the caller supplies the request list.
+// for http.batch(): same params, but the caller supplies the request list
 export function batchGet(path: string, opts: RequestOptions = {}): ['GET', string, null, Params] {
   return ['GET', `${BASE_URL}${path}`, null, buildParams(opts)];
 }
