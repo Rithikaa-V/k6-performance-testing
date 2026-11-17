@@ -11,14 +11,23 @@ on:
         default: smoke
       base_url:
         description: Target base URL
-        default: https://quickpizza.grafana.com
+        default: http://localhost:3333
 
 jobs:
   perf:
     runs-on: ubuntu-latest
+
+    # the app under test, started fresh for every run
+    services:
+      quickpizza:
+        image: ghcr.io/grafana/quickpizza-local:latest
+        ports:
+          - 3333:3333
+
     env:
       TEST_NAME: ${{ inputs.test || 'smoke' }}
-      BASE_URL: ${{ inputs.base_url || 'https://quickpizza.grafana.com' }}
+      BASE_URL: ${{ inputs.base_url || 'http://localhost:3333' }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +49,15 @@ jobs:
           for f in tests/*.test.ts; do
             k6 inspect "$f" > /dev/null
           done
+
+      - name: Wait for app
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3333/ready && exit 0
+            sleep 2
+          done
+          echo "app did not become ready"
+          exit 1
 
       # Any breached threshold makes k6 exit non-zero and fail the job.
       - name: Run ${{ env.TEST_NAME }}

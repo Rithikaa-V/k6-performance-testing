@@ -7,5 +7,5 @@ node_modules/
 results/*
 !results/.gitkeep
 
-docs/*
+docs/
 README.local.md
